@@ -31,21 +31,43 @@ void DP_Matrix_Chain(int N){
 	}//length for
 }//DP_Matrix_Chain
 
+void printresult(FILE **fpr,int i,int j){
+	if (i==j){
+		fprintf(*fpr,"A%d",i);
+		return;
+	}
+	else if (i==(j-1)){
+		fprintf(*fpr,"(A%d,A%d)",i,j);
+		return;
+	}
+	int k;
+	k=devide[i][j];
+	fprintf(*fpr,"(");
+	printresult(fpr,i,k-1);
+	fprintf(*fpr,",");
+	printresult(fpr,k,j);
+	fprintf(*fpr,")");
+}
+
 int main(){
 	int i,j,k;
-	int scale[4]={6,10,20,30};
+	int scale[4]={5,10,20,30};
 	//read numbers
-	FILE *fp;
+	FILE *fp,*fpr;
 	fp=fopen("input.txt","r+");
 	for (i=0;i<32;++i){
 		fscanf(fp,"%d",&p[i]);
 	}	
 	fclose(fp);
 
+	
+	fp=fopen("output.txt","w+");
+	fpr=fopen("result.txt","w+");
+	fprintf(fp,"********result*********\n");
+	fprintf(fpr,"********result*********\n");
+
 	//calculate
 	printf("**************CALCULATION START...****************\n");
-	fp=fopen("output.txt","w+");
-	fprintf(fp,"********result*********\n");
 	for (i=0;i<4;++i){
 		memset(devide,0,32*32*sizeof(int));
 		memset(min,0,32*32*sizeof(long int));
@@ -65,7 +87,10 @@ int main(){
 			fprintf(fp,"\n");
 		}
 		outputtime();
+		fprintf(fpr,"\nN:%d min is %ld\n",scale[i],min[0][scale[i]-1]);
+		printresult(&fpr,0,scale[i]-1);
 	}
 	printf("\n**************CALCULATION END**********************\n");
 	fclose(fp);
+	fclose(fpr);
 }
