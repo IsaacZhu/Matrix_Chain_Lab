@@ -103,4 +103,5 @@ int main(){
 	printf("\n**************CALCULATION END**********************\n");
 	fclose(fp);
 	fclose(fpr);
+	fclose(fpt);
 }
