@@ -3,33 +3,37 @@
 //zjr 11.26
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <limits.h>
 #include "timecount.h"
 
 int p[32];		//subscripts of matrixes
 int devide[32][32];     //devide points
-int min[32][32];	//record minimum of A[i]*...*A[j]
+long int min[32][32];	//record minimum of A[i]*...*A[j]
 
 //min[i,j]=min{min[i,k]+min[k,j]+p[i]*p[k]*p[j]}
 void DP_Matrix_Chain(int N){
-	int i,j,k,sum;
-	for (i=0;i<N;++i){
-		for (j=i+1;j<N;++j){
-			min[i][j]=INT_MAX;	
-			for (k=i+1;k<=j;++k){
-				sum=min[i][k-1]+min[k][j]+p[i]*p[k]*p[j];
+	int i,j,k,length;
+	long int sum;
+	for (length=1;length<N;++length){
+		j=length;
+		for (i=0;i<N-length;++i){
+			min[i][j]=INT_MAX;							//inatialize every min[i][j] to be unlimit
+			for (k=i+1;k<=j;++k){						//looking for devide point
+				sum=min[i][k-1]+min[k][j]+p[i]*p[k]*p[j+1]; 
 				if (sum<min[i][j]){
 					min[i][j]=sum;
 					devide[i][j]=k;
 				}
 			}//k for
-		}//j for
-	}//i for
+			++j;
+		}//i for
+	}//length for
 }//DP_Matrix_Chain
 
 int main(){
-	int i;
-	int scale[4]={5,10,20,30};
+	int i,j,k;
+	int scale[4]={6,10,20,30};
 	//read numbers
 	FILE *fp;
 	fp=fopen("input.txt","r+");
@@ -40,14 +44,28 @@ int main(){
 
 	//calculate
 	printf("**************CALCULATION START...****************\n");
+	fp=fopen("output.txt","w+");
+	fprintf(fp,"********result*********\n");
 	for (i=0;i<4;++i){
 		memset(devide,0,32*32*sizeof(int));
-		memset(min,0,32*32*sizeof(int));
+		memset(min,0,32*32*sizeof(long int));
 		timestart();
-		DP_Matrix_Chain(scale[i]);
+		DP_Matrix_Chain(scale[i]);				//calculate
 		timeend();
 		printf("\nN is %d:\n",scale[i]);
+		//output result
+		fprintf(fp,"\nN:%d min is %ld\n",scale[i],min[0][scale[i]-1]);
+		fprintf(fp,"\tdevide:\n");
+		for (j=0;j<scale[i];++j){
+			fprintf(fp,"\t");
+			for (k=0;k<scale[i];++k){
+				if (devide[j][k]>=10) fprintf(fp,"%d ",devide[j][k]);	
+				else fprintf(fp,"%d  ",devide[j][k]);
+			}
+			fprintf(fp,"\n");
+		}
 		outputtime();
 	}
-	printf("**************CALCULATION END**********************\n");
+	printf("\n**************CALCULATION END**********************\n");
+	fclose(fp);
 }
