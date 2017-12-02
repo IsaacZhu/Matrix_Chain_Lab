@@ -53,7 +53,7 @@ int main(){
 	int i,j,k;
 	int scale[4]={5,10,20,30};
 	//read numbers
-	FILE *fp,*fpr;
+	FILE *fp,*fpr,*fpt;
 	fp=fopen("input.txt","r+");
 	for (i=0;i<32;++i){
 		fscanf(fp,"%d",&p[i]);
@@ -63,8 +63,10 @@ int main(){
 	
 	fp=fopen("output.txt","w+");
 	fpr=fopen("result.txt","w+");
+	fpt=fopen("time.txt","w+");
 	fprintf(fp,"********result*********\n");
 	fprintf(fpr,"********result*********\n");
+	fprintf(fpt,"********result*********\n");
 
 	//calculate
 	printf("**************CALCULATION START...****************\n");
@@ -76,6 +78,7 @@ int main(){
 		timeend();
 		printf("\nN is %d:\n",scale[i]);
 		//output result
+		//output devide[][] to output.txt
 		fprintf(fp,"\nN:%d min is %ld\n",scale[i],min[0][scale[i]-1]);
 		fprintf(fp,"\tdevide:\n");
 		for (j=0;j<scale[i];++j){
@@ -86,7 +89,14 @@ int main(){
 			}
 			fprintf(fp,"\n");
 		}
+
+		//output time to time.txt
+		fprintf(fpt,"\nN:%d time is %.8lfs\n",scale[i],returntime());
+
+		//output time to screen
 		outputtime();
+
+		//output matrix chain solution to result.txt 
 		fprintf(fpr,"\nN:%d min is %ld\n",scale[i],min[0][scale[i]-1]);
 		printresult(&fpr,0,scale[i]-1);
 	}
